@@ -1,0 +1,31 @@
+---
+title: Projects
+---
+
+<ul style="list-style-type: none; margin: 0; padding: 0;">
+
+    {% for project in site.projects %}
+        <li>
+            <h1>{{ project.name }}</h1>
+            <p>{{ project.content | markdownify }}</p>
+            {% assign filteredPosts = site.posts | where_exp: "post", "post.project == project.short_name" | sort: "date" %}
+            {% if filteredPosts.size > 0 %}
+                <ul style="list-style-type: none; margin: 0; padding: 0; display: inline;">
+                    <li style="display: inline-block;"><b>Related Posts: </b></li>
+                    {% for post in filteredPosts %}
+                        {% if forloop.last %}
+                            <li style="display: inline-block;"><a href="{{ post.url }}">{{ post.title }}</a></li>
+                        {% else %}
+                            <li style="display: inline-block;"><a href="{{ post.url }}">{{ post.title }}</a>, </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% if forloop.last %}
+        {% else %}
+            <hr>
+        {% endif %}
+        </li>
+    {% endfor %}
+    
+</ul>

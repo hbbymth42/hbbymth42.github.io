@@ -1,0 +1,38 @@
+---
+layout: default
+---
+<h1 style="margin: 0;">{{ page.title }}</h1>
+
+<small>Date Added: {{ page.date | date: "%B %d, %Y" }}</small>
+
+{{ content }}
+
+<hr>
+
+{% assign filteredPosts = site.posts | where_exp: "post", "post.project == page.project" | sort: "date" %}
+{% if filteredPosts.size > 1 %}
+    <ul style="margin: 0; padding: 0; list-style-type: none; display: inline;">
+        <li style="display: inline-block;"><p><b>Posts in Associated Series: </b></p></li>
+        {% for post in filteredPosts %}
+            {% if forloop.last %}
+                {% if page.title == post.title %}
+                    <li style="display: inline-block;"><b>{{ forloop.index }}</b></li>
+                {% else %}
+                    <li style="display: inline-block;"><a href="{{ post.url }}">{{ forloop.index }}</a></li>
+                {% endif %}
+            {% else %}
+                {% if page.title == post.title %}
+                    <li style="display: inline-block;"><b>{{ forloop.index }}</b>, </li>
+                {% else %}
+                    <li style="display: inline-block;"><a href="{{ post.url }}">{{ forloop.index }}</a>, </li>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if page.project %}
+    <p><a href="/projects.html">Back to Projects</a></p>
+{% endif %}
+
+    <p><a href="/blog.html">Back to All Posts</a></p>

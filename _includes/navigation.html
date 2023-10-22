@@ -1,0 +1,11 @@
+{% for item in site.data.navigation %}
+    {% if item.link == site.owner-github-link %}
+        <a href="{{ item.link }}" class="btn" target="_blank">
+            {{ item.name }}
+        </a>
+    {% else %}
+        <a href="{{ item.link }}" class="btn">
+            {{ item.name }}
+        </a>
+    {% endif %}
+{% endfor %}

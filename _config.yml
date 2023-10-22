@@ -1,0 +1,29 @@
+title: "HobbyMath42's Portfolio & Blog"
+description: "A small blog and portfolio site, documenting some (hopefully) exciting projects!"
+owner-github-link: "https://github.com/hbbymth42/"
+
+domain: hbbymth42.github.io
+url: https://hbbymth42.github.io
+
+collections:
+  projects:
+    output: true
+    sort_by: date
+    permalink: /:collection/:name
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      permalink: /:year/:month/:day/:title:output_ext
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag

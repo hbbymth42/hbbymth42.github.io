@@ -1,0 +1,10 @@
+- name: Home
+  link: /
+- name: Projects
+  link: /projects.html
+- name: About
+  link: /about.html
+- name: Blog
+  link: /blog.html
+- name: GitHub
+  link: https://github.com/hbbymth42/
