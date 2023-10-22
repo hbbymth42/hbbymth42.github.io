@@ -257,6 +257,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.8.2)
+    webrick (1.8.1)
 
 PLATFORMS
   x86_64-linux
@@ -266,6 +267,7 @@ DEPENDENCIES
   jekyll-feed
   jekyll-seo-tag
   jekyll-sitemap
+  webrick (~> 1.8)
 
 BUNDLED WITH
    2.4.21

@@ -41,6 +41,24 @@ body {
   background: $body-background;
 }
 
+#skip-to-content {
+  height: 1px;
+  width: 1px;
+  position: absolute;
+  overflow: hidden;
+  top: -10px;
+
+  &:focus {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    height: auto;
+    width: auto;
+    background: invert(#63c0f5);
+    outline: thick solid invert(#63c0f5);
+  }
+}
+
 a {
   color: #63c0f5;
   text-decoration: none;
