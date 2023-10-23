@@ -42,20 +42,13 @@ body {
 }
 
 #skip-to-content {
-  height: 1px;
-  width: 1px;
   position: absolute;
-  overflow: hidden;
-  top: -10px;
-
-  &:focus {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    height: auto;
-    width: auto;
-    background: invert(#63c0f5);
-    outline: thick solid invert(#63c0f5);
+  left: 0;
+  top: 0;
+  color: rgba(255, 255, 255, 0);
+  text-decoration: none;
+  &:hover {
+    color: #63c0f5;
   }
 }
 
