@@ -46,9 +46,14 @@ body {
   left: 0;
   top: 0;
   color: rgba(255, 255, 255, 0);
-  text-decoration: none;
-  &:hover {
+  
+  @include small {
     color: #63c0f5;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 
