@@ -1,0 +1,3 @@
+[submodule "themes/hugo-xterm"]
+	path = themes/hugo-xterm
+	url = https://github.com/manid2/hugo-xterm

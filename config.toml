@@ -1,0 +1,35 @@
+baseURL = 'https://hbbymth42.github.io'
+languageCode = 'en-us'
+title = "HobbyMath42's Portfolio Site & Blog"
+theme = 'hugo-xterm'
+
+[params]
+  centerTheme = true
+  showMenuItems = true
+  favicon = "/images/xterm.png"
+  showBreadCrumbs = true
+  toc = true
+  copyrightUserUrl = "https://manid2.gitlab.io/"
+  copyrightUserText = "Mani Kumar"
+
+[languages]
+  [languages.en.params]
+    copyright = "© Mani Kumar"
+    readOtherPosts = "Read other posts"
+    missingContentMessage = "Page not found..."
+    missingBackButtonLabel = "Back to home page"
+
+    [languages.en.params.logo]
+      logoText = "Home"
+
+    [languages.en.menu]
+      [[languages.en.menu.main]]
+        identifier = "posts"
+        name = "Posts"
+        url = "/posts/"
+
+      [[languages.en.menu.main]]
+        identifier = "about"
+        name = "About"
+        url = "/about/"
+

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HobbyMath42&#39;s Portfolio Site &amp; Blog</title>
+    <link>https://hbbymth42.github.io/</link>
+    <description>Recent content on HobbyMath42&#39;s Portfolio Site &amp; Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+      <language>en-us</language>
+      <copyright>© Mani Kumar</copyright><atom:link href="https://hbbymth42.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About</title>
+      <link>https://hbbymth42.github.io/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+
+      <guid>https://hbbymth42.github.io/about/</guid>
+      <description>Hello!   Welcome to my personal blog &amp;amp; project site!
+My intention with this site is to document projects and observations that I find interesting!
+I enjoy learning and exploring different and new rabbit holes. If I find reinventing the wheel interesting, that will be what I&amp;rsquo;ll do!
+I hope that you find something worth your time on this site through one or more of my blog posts. If you come out of your time here learning something new, even better!</description>
+      <content>
+&lt;h1 id=&#34;hello&#34;&gt;
+  Hello!
+  &lt;a href=&#34;#hello&#34; class=&#34;hanchor&#34; ariaLabel=&#34;Anchor&#34;&gt;&lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Welcome to my personal blog &amp;amp; project site!&lt;/p&gt;
+&lt;p&gt;My intention with this site is to document projects and observations that I find interesting!&lt;/p&gt;
+&lt;p&gt;I enjoy learning and exploring different and new rabbit holes. If I find reinventing the wheel interesting, that will be what I&amp;rsquo;ll do!&lt;/p&gt;
+&lt;p&gt;I hope that you find something worth your time on this site through one or more of my blog posts. If you come out of your time here learning something new, even better!&lt;/p&gt;
+</content>
+    </item>
+  </channel>
+</rss>
