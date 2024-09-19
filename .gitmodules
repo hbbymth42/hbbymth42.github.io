@@ -1,0 +1,3 @@
+[submodule "themes/hugomath42"]
+	path = themes/hugomath42
+	url = git@github.com:hbbymth42/hugomath42.git
