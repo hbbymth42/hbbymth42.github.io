@@ -1,0 +1,27 @@
+baseURL = 'https://hbbymth42.github.io/'
+languageCode = 'en-US'
+title = "Hobbymath42's Blog"
+theme = 'hugomath42'
+
+[[menus.main]]
+    name = 'Home'
+    pageRef = '/'
+    weight = 10
+
+[[menus.main]]
+    name = 'Posts'
+    pageRef = '/posts'
+    weight = 20
+
+[[menus.main]]
+    name = 'Projects'
+    pageRef = '/projects'
+    weight = 30
+
+[[menus.main]]
+    name = 'About'
+    pageRef = '/about'
+    weight = 40
+
+[taxonomies]
+    project = 'projects'

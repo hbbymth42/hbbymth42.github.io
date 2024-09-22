@@ -1,0 +1,150 @@
+/* Fonts & Font Styling */
+@font-face {
+    font-family: "ChakraPetch";
+    src:
+        url("../fonts/chakrapetch-medium-webfont.woff2") format("woff2"),
+        url("../fonts/chakrapetch-medium-webfont.woff") format("woff"),
+        url("../fonts/chakrapetch-medium-webfont.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "ChakraPetch";
+    src:
+        url("../fonts/chakrapetch-mediumitalic-webfont.woff2") format("woff2"),
+        url("../fonts/chakrapetch-mediumitalic-webfont.woff") format("woff"),
+        url("../fonts/chakrapetch-mediumitalic-webfont.ttf") format("truetype");
+    font-weight: normal;
+    font-style: italic;
+}
+@font-face {
+    font-family: "ChakraPetch";
+    src:
+        url("../fonts/chakrapetch-bold-webfont.woff2") format("woff2"),
+        url("../fonts/chakrapetch-bold-webfont.woff") format("woff"),
+        url("../fonts/chakrapetch-bold-webfont.ttf") format("truetype");
+    font-weight: bold;
+    font-style: normal;
+}
+@font-face {
+    font-family: "ChakraPetch";
+    src:
+        url("../fonts/chakrapetch-bolditalic-webfont.woff2") format("woff2"),
+        url("../fonts/chakrapetch-bolditalic-webfont.woff") format("woff"),
+        url("../fonts/chakrapetch-bolditalic-webfont.ttf") format("truetype");
+    font-weight: bold;
+    font-style: italic;
+}
+
+body {
+    font-family: "ChakraPetch", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+strong {
+    font-weight: bold;
+}
+
+strong em {
+    font-weight: bold;
+    font-style: italic;
+}
+/* General Site Structures */
+html {
+    font-size: 18px;
+}
+
+body {
+  background-color: hsl(300, 53%, 7%);
+  color: hsl(75, 100%, 75%);
+  line-height: 1.5;
+  margin: auto;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+a {
+    color: hsl(75, 100%, 75%);
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+a:active {
+   color: hsl(0, 100%, 75%); 
+}
+
+a:visited {
+    color: hsl(300, 100%, 75%);
+}
+
+main {
+    flex: 1;
+}
+
+/* Header & Nav Bar */
+header {
+  border-bottom: 0.1rem solid hsl(76, 100%, 10%);
+  margin-bottom: 1rem;
+  h1 {
+      font-size: 3rem;
+      text-align: center;
+      a {
+          color: hsl(75, 100%, 75%);
+          text-decoration: none;
+      }
+  }
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Footer */
+footer {
+    border-top: 0.1rem solid hsl(76, 100%, 10%);
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Other Classes for Specific Elements */
+.link-btn {
+    color: hsl(75, 100%, 75%);
+    text-decoration: none;
+    padding: 0.75rem;
+    border: 0.1rem solid hsl(76, 100%, 10%);
+    border-radius: 0.5rem;
+    border-color: hsl(75, 100%, 75%);
+}
+
+.link-btn:hover {
+    background-color: hsl(300, 53%, 25%);
+    -webkit-transition: background-color 0.5s ease-out;
+    -moz-transition: background-color 0.5s ease-out;
+    -o-transition: background-color 0.5s ease-out;
+    transition: background-color 0.5s ease-out;
+}
+
+.social-links {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    padding: 0;
+}
