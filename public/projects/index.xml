@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Projects on Hobbymath42&#39;s Blog</title>
-    <link>http://localhost:1313/projects/</link>
+    <link>https://hbbymth42.github.io/projects/</link>
     <description>Recent content in Projects on Hobbymath42&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en-US</language>
     <lastBuildDate>Thu, 26 Sep 2024 16:09:59 +1000</lastBuildDate>
-    <atom:link href="http://localhost:1313/projects/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://hbbymth42.github.io/projects/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Favourite Music Releases Visualiser</title>
-      <link>http://localhost:1313/projects/favourite-music-releases-visualiser/</link>
+      <link>https://hbbymth42.github.io/projects/favourite-music-releases-visualiser/</link>
       <pubDate>Thu, 26 Sep 2024 16:09:59 +1000</pubDate>
-      <guid>http://localhost:1313/projects/favourite-music-releases-visualiser/</guid>
+      <guid>https://hbbymth42.github.io/projects/favourite-music-releases-visualiser/</guid>
       <description>&lt;p&gt;A Multi-Page Streamlit App which visualises my favourite music releases! See &lt;a href=&#34;https://favourite-music-releases-visualiser.streamlit.app/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;&#xA;!&lt;/p&gt;</description>
     </item>
   </channel>
