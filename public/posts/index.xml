@@ -2,17 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Hobbymath42&#39;s Blog</title>
-    <link>https://hbbymth42.github.io/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Hobbymath42&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 26 Sep 2024 16:09:59 +1000</lastBuildDate>
-    <atom:link href="https://hbbymth42.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 27 Sep 2024 11:04:48 +1000</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Favourite Music Releases Visualiser - Visualisation (Part 2)</title>
+      <link>http://localhost:1313/posts/favourite-music-releases-visualiser-visualisation-part-2/</link>
+      <pubDate>Fri, 27 Sep 2024 11:04:48 +1000</pubDate>
+      <guid>http://localhost:1313/posts/favourite-music-releases-visualiser-visualisation-part-2/</guid>
+      <description>&lt;p&gt;&lt;em&gt;This is Part 2 of the Favourite Music Releases Visualiser Project Series, see Part 1 if you missed it &lt;a href=&#34;../favourite-music-releases-visualiser-the-data-part-1/index.html&#34;&gt;here&lt;/a&gt;&#xA;!&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Continuing on from the previous blog post in this series, with the relevant queries produced and ready for use, it&amp;rsquo;s time to dive into Python &amp;amp; Streamlit!&lt;/p&gt;&#xA;&lt;h2 id=&#34;streamlit-directory-structure-and-setup&#34;&gt;Streamlit Directory Structure and Setup&lt;/h2&gt;&#xA;&lt;p&gt;As discussed in the prior post, Streamlit is a framework which can take Python code and turn it into a single page or multi-page web application, without the need for JavaScript or its respective frameworks/libraries.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Favourite Music Releases Visualiser - The Data (Part 1)</title>
-      <link>https://hbbymth42.github.io/posts/favourite-music-releases-visualiser-the-data-part-1/</link>
+      <link>http://localhost:1313/posts/favourite-music-releases-visualiser-the-data-part-1/</link>
       <pubDate>Thu, 26 Sep 2024 16:09:59 +1000</pubDate>
-      <guid>https://hbbymth42.github.io/posts/favourite-music-releases-visualiser-the-data-part-1/</guid>
+      <guid>http://localhost:1313/posts/favourite-music-releases-visualiser-the-data-part-1/</guid>
       <description>&lt;p&gt;So&amp;hellip; This is my first proper project that I have completed! (outside of this website)&lt;/p&gt;&#xA;&lt;p&gt;I have enjoyed listening to music of various genres ever since I can remember!&lt;/p&gt;&#xA;&lt;p&gt;I will likely make another post about my music listening journey but to keep things short, I wanted a way to keep a list of my favourite music albums, LPs, Soundtracks, etc., in one place!&lt;/p&gt;&#xA;&lt;p&gt;Hence, this project is my attempt to do so while also gaining some insight into my current music tastes and potentially, identify gaps that I want to fill!&lt;/p&gt;</description>
     </item>
   </channel>

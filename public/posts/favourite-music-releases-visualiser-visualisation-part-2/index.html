@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Favourite Music Releases Visualiser - Visualisation (Part 2) | Hobbymath42&#39;s Blog</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+
+      <script src="/js/main.js"></script>
+
+
+</head>
+<body>
+  <header>
+    <h1><a href="http://localhost:1313/">Hobbymath42&#39;s Blog</a></h1>
+
+  <nav>
+    <ul>
+      <a class="link-btn" href="/"><li>Home</li>
+      </a>
+      <a class="link-btn" aria-current="true" class="ancestor" href="/posts/"><li>Posts</li>
+      </a>
+      <a class="link-btn" href="/projects/"><li>Projects</li>
+      </a>
+      <a class="link-btn" href="/about/"><li>About</li>
+      </a>
+    </ul>
+  </nav>
+
+
+  </header>
+  <main>
+    
+  <h1>Favourite Music Releases Visualiser - Visualisation (Part 2)</h1>
+
+  
+  
+  <strong><time datetime="2024-09-27T11:04:48&#43;10:00">September 27, 2024</time></strong>
+
+  <p><em>This is Part 2 of the Favourite Music Releases Visualiser Project Series, see Part 1 if you missed it <a href="../favourite-music-releases-visualiser-the-data-part-1/index.html">here</a>
+!</em></p>
+<p>Continuing on from the previous blog post in this series, with the relevant queries produced and ready for use, it&rsquo;s time to dive into Python &amp; Streamlit!</p>
+<h2 id="streamlit-directory-structure-and-setup">Streamlit Directory Structure and Setup</h2>
+<p>As discussed in the prior post, Streamlit is a framework which can take Python code and turn it into a single page or multi-page web application, without the need for JavaScript or its respective frameworks/libraries.</p>
+<p>A basic structure for a single page app would typically follow this structure (which I have similarly adapted to render my multi-page app):
+<img src="./single_page_app_structure.png" alt="Single Page App Structure"></p>
+<p>For a multi-page app, we simply add a <strong>pages</strong> directory and point the deployment of the app to an &rsquo;entrypoint&rsquo; file:
+<img src="./multi_page_app_structure.png" alt="Multi-Page App Structure"></p>
+<p><em>For more on information on Streamlit&rsquo;s inner workings, give the very friendly <a href="https://docs.streamlit.io/" target="_blank">docs</a>
+ a look :)</em></p>
+<p>Adapting this structure to this specific project, I ended up using this structure (apologies for the blurry quality!):
+<img src="./music_visualiser_structure.png" alt="Music Visualiser Structure"></p>
+<p>Before diving into the Python code, I&rsquo;ll provide a quick overview of the first relevant file for this project: <strong>config.toml</strong></p>
+<p>This is what that file looks like:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span>[<span style="color:#a6e22e">theme</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">base</span>=<span style="color:#e6db74">&#34;light&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">primaryColor</span>=<span style="color:#e6db74">&#34;#4f174f&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">backgroundColor</span>=<span style="color:#e6db74">&#34;#dfff80&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">secondaryBackgroundColor</span>=<span style="color:#e6db74">&#34;#d2ff4d&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">textColor</span>=<span style="color:#e6db74">&#34;#1b081b&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">font</span>=<span style="color:#e6db74">&#34;monospace&#34;</span>
+</span></span></code></pre></div><p>As you could probably already gather, this basic configuration file sets the colour scheme and font for the web app as well as some of the visuals (however, I do end up applying some more custom colouring to the visuals, more on that later!).</p>
+<p>The more&hellip; astute reader might even observe that the colours used here are an inversion of the colour scheme used for this website (at least, at the time of writing)!</p>
+<p>Anyhow, that covers a lot of the pre-preparation and setup, now for the Python code!</p>
+<h2 id="finally-were-looking-at-the-python-code">Finally&hellip; we&rsquo;re looking at the Python code!</h2>
+<h3 id="homepyhttpsgithubcomhbbymth42favourite_releases_visualiserblobmainf09f8eb5_homepy"><a href="https://github.com/hbbymth42/favourite_releases_visualiser/blob/main/%F0%9F%8E%B5_Home.py" target="_blank">Home.py</a>
+</h3>
+<p>This <a href="https://favourite-music-releases-visualiser.streamlit.app/" target="_blank">page</a>
+ is structurally, the &rsquo;entrypoint&rsquo; for the app.</p>
+<p>From a design perspective, it&rsquo;s relatively simple, and the code itself reflects as such:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> streamlit <span style="color:#66d9ef">as</span> st
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>st<span style="color:#f92672">.</span>set_page_config(
+</span></span><span style="display:flex;"><span>        page_title<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Welcome&#34;</span>,
+</span></span><span style="display:flex;"><span>        page_icon<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;🎵&#34;</span>,
+</span></span><span style="display:flex;"><span>        initial_sidebar_state<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;expanded&#34;</span>,
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>st<span style="color:#f92672">.</span>write(<span style="color:#e6db74">&#34;# Favourite Music Releases Visualiser&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>st<span style="color:#f92672">.</span>sidebar<span style="color:#f92672">.</span>success(<span style="color:#e6db74">&#34;Select a page above!&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>st<span style="color:#f92672">.</span>markdown(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        This is a multi-page app which visualises a list of my favourite music releases!
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        I hope that you find an Album, EP, Soundtrack and/or other music release that would also be/become a favourite for you!
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        **Select a page from the sidebar** that may be of interest to you! 😄
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        Enjoy!
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>Streamlit contains functions and methods which allow for markdown-like interaction with the web application. The <code>set_page_config()</code> function is used across all 3 pages of this web app and as you can observe by viewing the final product, this configures the title of the page.</p>
+<h3 id="releases_by_yearpyhttpsgithubcomhbbymth42favourite_releases_visualiserblobmainpages1_f09f9385_releases_by_yearpy"><a href="https://github.com/hbbymth42/favourite_releases_visualiser/blob/main/pages/1_%F0%9F%93%85_Releases_by_Year.py" target="_blank">Releases_by_Year.py</a>
+</h3>
+<p>This <a href="https://favourite-music-releases-visualiser.streamlit.app/Releases_by_Year" target="_blank">page</a>
+ contains two main visualisations for the data:</p>
+<ol>
+<li>Bar Chart for Decade/Horizontal Chart for Year</li>
+<li>A Table of Releases and relevant information about the Release</li>
+</ol>
+<p>The visualisations are also able to be interacted/filtered based on the radio buttons available in the sidebar, for example, if I want to see my favourite albums from the 2000s, I can simply select the 2000s radio button and both the table and chart will be filtered to only my favourite releases from the 2000s, like so:</p>
+<p><em>Initial View</em>
+<img src="standard_release_view.png" alt="Standard Release View"></p>
+<p><em>Filtered View</em>
+<img src="2000s_releases_view.png" alt="2000s Releases View"></p>
+<p>Starting with the radio button, this is how I had implemented it in code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>graph_type <span style="color:#f92672">=</span> st<span style="color:#f92672">.</span>sidebar<span style="color:#f92672">.</span>radio(
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Select a relevant decade:&#34;</span>,
+</span></span><span style="display:flex;"><span>        [<span style="color:#e6db74">&#34;All&#34;</span>, <span style="color:#e6db74">&#34;1960s&#34;</span>, <span style="color:#e6db74">&#34;1970s&#34;</span>, <span style="color:#e6db74">&#34;1980s&#34;</span>, <span style="color:#e6db74">&#34;1990s&#34;</span>, <span style="color:#e6db74">&#34;2000s&#34;</span>, <span style="color:#e6db74">&#34;2010s&#34;</span>, <span style="color:#e6db74">&#34;2020s&#34;</span>]
+</span></span><span style="display:flex;"><span>)
+</span></span></code></pre></div><p>This creates a list of selectable radio buttons and when selected, can apply a filter to the other visuals. This filtering is implemented via a simple <code>if</code> statement:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> graph_type <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;All&#34;</span>: 
+</span></span></code></pre></div><p>This simple statement and the code block that follows allows for the visuals to be filtered based on the radio button selected by the user.For the Bar/Horizontal Charts, the below code is used at their respective parts of the code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Filtered Yearly Horizontal Chart</span>
+</span></span><span style="display:flex;"><span>bar_chart <span style="color:#f92672">=</span> go<span style="color:#f92672">.</span>Figure(go<span style="color:#f92672">.</span>Bar(
+</span></span><span style="display:flex;"><span>                        x<span style="color:#f92672">=</span>filtered_releases_yearly_count[<span style="color:#e6db74">&#39;count&#39;</span>],
+</span></span><span style="display:flex;"><span>                        y<span style="color:#f92672">=</span>filtered_releases_yearly_count[<span style="color:#e6db74">&#39;release_year&#39;</span>],
+</span></span><span style="display:flex;"><span>                        orientation<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;h&#39;</span>,
+</span></span><span style="display:flex;"><span>                        marker_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#d2ff4d&#34;</span>,
+</span></span><span style="display:flex;"><span>                        hoverlabel<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>                            font<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>                                color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>
+</span></span><span style="display:flex;"><span>                                ),
+</span></span><span style="display:flex;"><span>                            bordercolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>
+</span></span><span style="display:flex;"><span>                            ),
+</span></span><span style="display:flex;"><span>                        )
+</span></span><span style="display:flex;"><span>                      )
+</span></span><span style="display:flex;"><span>bar_chart<span style="color:#f92672">.</span>update_layout(
+</span></span><span style="display:flex;"><span>        plot_bgcolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>,
+</span></span><span style="display:flex;"><span>        margin<span style="color:#f92672">=</span>dict(l<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, r<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, t<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, b<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>),
+</span></span><span style="display:flex;"><span>        xaxis<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>            showgrid<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>            gridcolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#dfff80&#34;</span>,
+</span></span><span style="display:flex;"><span>            tickfont_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>,
+</span></span><span style="display:flex;"><span>            zeroline<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>            zerolinecolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#dfff80&#34;</span>,
+</span></span><span style="display:flex;"><span>            dtick<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>            ),
+</span></span><span style="display:flex;"><span>        yaxis<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>            tickfont_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>,
+</span></span><span style="display:flex;"><span>            type<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;category&#39;</span>,
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Unfiltered Decade Bar Chart</span>
+</span></span><span style="display:flex;"><span>bar_chart <span style="color:#f92672">=</span> go<span style="color:#f92672">.</span>Figure(go<span style="color:#f92672">.</span>Bar(
+</span></span><span style="display:flex;"><span>                        y<span style="color:#f92672">=</span>decades_count[<span style="color:#e6db74">&#39;count&#39;</span>],
+</span></span><span style="display:flex;"><span>                        x<span style="color:#f92672">=</span>decades_count[<span style="color:#e6db74">&#39;release_decade&#39;</span>],
+</span></span><span style="display:flex;"><span>                        orientation<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;v&#39;</span>,
+</span></span><span style="display:flex;"><span>                        marker_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#d2ff4d&#34;</span>,
+</span></span><span style="display:flex;"><span>                        hoverlabel<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>                            font<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>                                color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>
+</span></span><span style="display:flex;"><span>                                ),
+</span></span><span style="display:flex;"><span>                            bordercolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>
+</span></span><span style="display:flex;"><span>                            )
+</span></span><span style="display:flex;"><span>                        )
+</span></span><span style="display:flex;"><span>                      )
+</span></span><span style="display:flex;"><span>bar_chart<span style="color:#f92672">.</span>update_layout(
+</span></span><span style="display:flex;"><span>        plot_bgcolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>,
+</span></span><span style="display:flex;"><span>        margin<span style="color:#f92672">=</span>dict(l<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, r<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, t<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, b<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>),
+</span></span><span style="display:flex;"><span>        yaxis<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>            showline<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>            gridcolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#dfff80&#34;</span>,
+</span></span><span style="display:flex;"><span>            tickfont_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>,
+</span></span><span style="display:flex;"><span>            zerolinecolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#dfff80&#34;</span>,
+</span></span><span style="display:flex;"><span>            ),
+</span></span><span style="display:flex;"><span>        xaxis<span style="color:#f92672">=</span>dict(
+</span></span><span style="display:flex;"><span>            tickfont_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>,
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>    )
+</span></span></code></pre></div><p>The code between each of the respective charts is relatively similar with the most notable difference being the orientation of the chart. Changing the orientation also flips the x-axis &amp; y-axis and therefore, the styling applied is reflective of this change.</p>
+<p>Another notable feature of this code (and the remaining code) is that it mainly interacts with the <a href="https://plotly.com/python/" target="_blank">Plotly Graphing Library</a>
+, with all the visuals on this page (and the following page) relying on the visuals available in this library. Streamlit contains functions (such as <code>.plotly_chart()</code>) which directly interface with visuals produced using this library, hence why this library was specifically used in the code.</p>
+<p>Displaying the tables under each of the charts was done as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Filtered by Decade Table</span>
+</span></span><span style="display:flex;"><span>st<span style="color:#f92672">.</span>data_editor(
+</span></span><span style="display:flex;"><span>        filtered_releases[[<span style="color:#e6db74">&#39;release_title&#39;</span>, <span style="color:#e6db74">&#39;artist_name&#39;</span>, <span style="color:#e6db74">&#39;release_type&#39;</span>, <span style="color:#e6db74">&#39;release_date&#39;</span>]],
+</span></span><span style="display:flex;"><span>        column_config<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;release_title&#34;</span>: st<span style="color:#f92672">.</span>column_config<span style="color:#f92672">.</span>TextColumn(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Release&#34;</span>,
+</span></span><span style="display:flex;"><span>                help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Name of Music Release&#34;</span>,
+</span></span><span style="display:flex;"><span>                ),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;artist_name&#34;</span>: st<span style="color:#f92672">.</span>column_config<span style="color:#f92672">.</span>TextColumn(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Artist&#34;</span>,
+</span></span><span style="display:flex;"><span>                help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Name of Music Artist&#34;</span>,
+</span></span><span style="display:flex;"><span>                ),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;release_type&#34;</span>: st<span style="color:#f92672">.</span>column_config<span style="color:#f92672">.</span>TextColumn(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Release Type&#34;</span>,
+</span></span><span style="display:flex;"><span>                help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Type of Release (typically, Format of Release)&#34;</span>,
+</span></span><span style="display:flex;"><span>                ),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;release_date&#34;</span>: st<span style="color:#f92672">.</span>column_config<span style="color:#f92672">.</span>DateColumn(
+</span></span><span style="display:flex;"><span>                <span style="color:#e6db74">&#34;Release Date&#34;</span>,
+</span></span><span style="display:flex;"><span>                help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Date of Release&#34;</span>,
+</span></span><span style="display:flex;"><span>                format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YYYY-MM-DD&#34;</span>,
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>            },
+</span></span><span style="display:flex;"><span>        hide_index<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>        use_container_width<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>        disabled<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Unfiltered Table</span>
+</span></span><span style="display:flex;"><span>st<span style="color:#f92672">.</span>data_editor(
+</span></span><span style="display:flex;"><span>    releases[[<span style="color:#e6db74">&#39;release_title&#39;</span>, <span style="color:#e6db74">&#39;artist_name&#39;</span>, <span style="color:#e6db74">&#39;release_type&#39;</span>, <span style="color:#e6db74">&#39;release_date&#39;</span>]],
+</span></span><span style="display:flex;"><span>    column_config<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;release_title&#34;</span>: st<span style="color:#f92672">.</span>column_config<span style="color:#f92672">.</span>TextColumn(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Release&#34;</span>,
+</span></span><span style="display:flex;"><span>            help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Name of Music Release&#34;</span>,
+</span></span><span style="display:flex;"><span>            ),
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;artist_name&#34;</span>: st<span style="color:#f92672">.</span>column_config<span style="color:#f92672">.</span>TextColumn(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Artist&#34;</span>,
+</span></span><span style="display:flex;"><span>            help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Name of Music Artist&#34;</span>,
+</span></span><span style="display:flex;"><span>            ),
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;release_type&#34;</span>: st<span style="color:#f92672">.</span>column_config<span style="color:#f92672">.</span>TextColumn(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Release Type&#34;</span>,
+</span></span><span style="display:flex;"><span>            help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Type of Release (typically, Format of Release)&#34;</span>,
+</span></span><span style="display:flex;"><span>            ),
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;release_date&#34;</span>: st<span style="color:#f92672">.</span>column_config<span style="color:#f92672">.</span>DateColumn(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;Release Date&#34;</span>,
+</span></span><span style="display:flex;"><span>            help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Date of Release&#34;</span>,
+</span></span><span style="display:flex;"><span>            format<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YYYY-MM-DD&#34;</span>,
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>        },
+</span></span><span style="display:flex;"><span>    hide_index<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>    use_container_width<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>    disabled<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>,
+</span></span><span style="display:flex;"><span>    )
+</span></span></code></pre></div><p>The <code>.data_editor()</code> function was used here in order to more appropriately format the Pandas DataFrame (<code>releases</code> &amp; <code>filtered_releases</code> respectively) that was input into the function, while also displaying the formatted table for the user.</p>
+<p>The latter 3 boolean assignments were used to ensure the following:</p>
+<ol>
+<li>The user cannot see the index of the DataFrame (<code>hide_index=True</code>),</li>
+<li>The size of the Table fits the width of the container (in this case, the block where the main content is displayed on the page) (<code>use_container_width=True</code>), and</li>
+<li>Prevent the user from editing the data in the Table (<code>disabled=True</code>).</li>
+</ol>
+<p>And that&hellip; covers off the Releases by Year page!</p>
+<p>To conclude, we&rsquo;ll finish off on the Artists by Country page!</p>
+<h3 id="artists_by_countrypyhttpsgithubcomhbbymth42favourite_releases_visualiserblobmainpages2_f09f8c90_artists_by_countrypy"><a href="https://github.com/hbbymth42/favourite_releases_visualiser/blob/main/pages/2_%F0%9F%8C%90_Artists_by_Country.py" target="_blank">Artists_by_Country.py</a>
+</h3>
+<p>Unlike the previous page, this page is relatively static, containing only:</p>
+<ol>
+<li>A Choropleth Map, where countries become more green based on the number of artists that come from that country</li>
+<li>A Table listing my favourite artists</li>
+</ol>
+<p>The code for the table is effectively the same as what was done on the previous page, with the only difference being that the DataFrame is a list of Artists and their birth countries/countries of origin.</p>
+<p>For the map visual, the code is as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>country_choropleth <span style="color:#f92672">=</span> go<span style="color:#f92672">.</span>Figure(data<span style="color:#f92672">=</span>go<span style="color:#f92672">.</span>Choropleth(
+</span></span><span style="display:flex;"><span>        locations <span style="color:#f92672">=</span> artists_by_country[<span style="color:#e6db74">&#39;country_code&#39;</span>],
+</span></span><span style="display:flex;"><span>        z <span style="color:#f92672">=</span> artists_by_country[<span style="color:#e6db74">&#39;num_artists&#39;</span>],
+</span></span><span style="display:flex;"><span>        text <span style="color:#f92672">=</span> artists_by_country[<span style="color:#e6db74">&#39;country_name&#39;</span>],
+</span></span><span style="display:flex;"><span>        colorscale<span style="color:#f92672">=</span>[[<span style="color:#ae81ff">0</span>,<span style="color:#e6db74">&#39;rgb(249, 255, 230)&#39;</span>],[<span style="color:#ae81ff">1</span>,<span style="color:#e6db74">&#39;rgb(195, 255, 0)&#39;</span>]],
+</span></span><span style="display:flex;"><span>        autocolorscale<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>        reversescale<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>        hoverlabel_font_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>,
+</span></span><span style="display:flex;"><span>        hoverlabel_bordercolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#1b081b&#34;</span>,
+</span></span><span style="display:flex;"><span>        marker_line_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;#dfff80&#34;</span>,
+</span></span><span style="display:flex;"><span>        showscale<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>        ))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>country_choropleth<span style="color:#f92672">.</span>update_layout(
+</span></span><span style="display:flex;"><span>        geo_bgcolor<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rgb(27, 8, 27)&#34;</span>,
+</span></span><span style="display:flex;"><span>        margin<span style="color:#f92672">=</span>dict(l<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, r<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, t<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, b<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>),
+</span></span><span style="display:flex;"><span>        )
+</span></span></code></pre></div><p>This code mainly adjusts the colour scheme of the map and its features (like hover labels) to match the scheme of the web application. This again uses the Plotly Library to create a Choropleth Map, wherein the countrie&rsquo;s colour dynamically changes depending on the number of artists from that country (see <code>colorscale</code>).</p>
+<h3 id="concluding-remarks">Concluding Remarks</h3>
+<p>So&hellip; there&rsquo;s my first project! Thanks again for reading through up to this point. This is my first proper project so I&rsquo;m sure there is a lot more I can improve on!</p>
+<p>All of my code for this project can be seen on my GitHub <a href="https://github.com/hbbymth42/favourite_releases_visualiser" target="_blank">here</a>
+!</p>
+<p>I hope that you managed to get something out of reading through these last few blog posts. Maybe you can make your own streamlit project!</p>
+<p>If you want to read about some more projects I am working on/have worked on, click the <strong>Projects</strong> button at the top of this page, or <strong>Posts</strong> if you want to peruse my thoughts on various other things that interest me!</p>
+<p>Thanks again for sticking around!</p>
+<p>&ndash; Hobbymath42</p>
+
+  
+
+
+  </main>
+  <footer>
+    <ul class="social-links">
+    <a href="https://github.com/hbbymth42" target="_blank" class="link-btn"><li>Github</li></a>
+</ul>
+<p>Copyright 2024. All rights reserved.</p>
+
+  </footer>
+</body>
+</html>

@@ -120,4 +120,4 @@ The final visualisations will be discussed in the following blog post but to kee
 
 These queries are structured in a way which can be easily used and/or transformed to suit the structure that the relevant visual requires.
 
-And... that covers it! Thanks for sticking through so far! If you want to keep reading on to find out more about the visuals, see Part 2!
+And... that covers it! Thanks for sticking through so far! If you want to keep reading on to find out more about the visuals, see [Part 2](../favourite-music-releases-visualiser-visualisation-part-2/index.html)!
