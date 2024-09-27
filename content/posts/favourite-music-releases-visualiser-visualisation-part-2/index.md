@@ -2,6 +2,7 @@
 title = 'Favourite Music Releases Visualiser - Visualisation (Part 2)'
 date = 2024-09-27T11:04:48+10:00
 draft = false
+projects = ['favourite-music-releases-visualiser']
 +++
 
 *This is Part 2 of the Favourite Music Releases Visualiser Project Series, see Part 1 if you missed it [here](../favourite-music-releases-visualiser-the-data-part-1/index.html)!*
