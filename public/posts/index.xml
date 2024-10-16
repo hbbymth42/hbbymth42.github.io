@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Hobbymath42&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en-US</language>
-    <lastBuildDate>Fri, 27 Sep 2024 11:04:48 +1000</lastBuildDate>
+    <lastBuildDate>Wed, 16 Oct 2024 16:02:29 +1100</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ASGS GeoNames Pipeline (Corporate Tax Transparency Analysis - Part 1)</title>
+      <link>http://localhost:1313/posts/asgs-geonames-pipeline-corporate-tax-transparency-analysis-part-1/</link>
+      <pubDate>Wed, 16 Oct 2024 16:02:29 +1100</pubDate>
+      <guid>http://localhost:1313/posts/asgs-geonames-pipeline-corporate-tax-transparency-analysis-part-1/</guid>
+      <description>&lt;p&gt;Alright, time for a new project!&lt;/p&gt;&#xA;&lt;p&gt;Well, sort of two new projects!&lt;/p&gt;&#xA;&lt;p&gt;This post specifically is effectively a beginning of sorts, starting out as both the first part of a larger whole, as well as the start of another whole in itself!&lt;/p&gt;&#xA;&lt;p&gt;The tl;dr of this post is that I wanted to create a pipeline for geospatial analysis of Australian-specific datasets (I&amp;rsquo;ll get into why this is the case soon enough)!&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Favourite Music Releases Visualiser - Visualisation (Part 2)</title>
       <link>http://localhost:1313/posts/favourite-music-releases-visualiser-visualisation-part-2/</link>
