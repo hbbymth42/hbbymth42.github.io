@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ABN Postcode Extractor (Corporate Tax Transparency Analysis - Part 2) | Hobbymath42&#39;s Blog</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+
+      <script src="/js/main.js"></script>
+
+
+</head>
+<body>
+  <header>
+    <h1><a href="http://localhost:1313/">Hobbymath42&#39;s Blog</a></h1>
+
+  <nav>
+    <ul>
+      <a class="link-btn" href="/"><li>Home</li>
+      </a>
+      <a class="link-btn" aria-current="true" class="ancestor" href="/posts/"><li>Posts</li>
+      </a>
+      <a class="link-btn" href="/projects/"><li>Projects</li>
+      </a>
+      <a class="link-btn" href="/about/"><li>About</li>
+      </a>
+    </ul>
+  </nav>
+
+
+  </header>
+  <main>
+    
+  <h1>ABN Postcode Extractor (Corporate Tax Transparency Analysis - Part 2)</h1>
+
+  
+  
+  <strong><time datetime="2024-10-18T18:52:29&#43;11:00">October 18, 2024</time></strong>
+
+  <p><em>This is Part 2 of a three-part series. You can find the previous part <a href="https://hbbymth42.github.io/posts/asgs-geonames-pipeline-corporate-tax-transparency-analysis-part-1/" target="_blank">here</a>
+. :)</em></p>
+<p>Continuing on from the previous part, we are going to jump to another dataset. The previous part contains more technical information around geospatial mapping and not too much of a focus on the data I am trying to analyse.</p>
+<p>Hence, this part will have more of a focus on the data I wish to analyse: The <a href="https://data.gov.au/data/dataset/corporate-transparency" target="_blank">2021-22 Corporate Tax Transparency Report</a>
+ released by the Australian Taxation Office (ATO).</p>
+<p>Additionally, this part will also focus on another dataset which I intend to use to enhance this data: The <a href="https://data.gov.au/data/dataset/abn-bulk-extract" target="_blank">ABN Bulk Extract</a>
+ released by the Australian Business Register (ABR).</p>
+<p>Far out, another dataset?! How many of these things are you gathering? Well, there&rsquo;s a reason for picking this specific dataset.</p>
+<p>If you recall my previous post, remember how we can get the main business location postcode from an entity&rsquo;s Australian Business Number (ABN). Well, rather than manually gathering this data by searching every single ABN from the Corporate Tax Transparency Report, we have a way to automate this data collection!</p>
+<p>Let&rsquo;s start with a bit of background on the ABN Bulk Extract.</p>
+<h2 id="the-abn-bulk-extract-saving-time-with-yet-another-dataset">The ABN Bulk Extract&hellip; saving time with yet ANOTHER dataset</h2>
+<p>The ABN Bulk Extract is a weekly-updated dataset which contains publicly available information provided by businesses when they register for an ABN. There are a number of attributes that this dataset gathers but the one we are particularly interested in is postcodes.</p>
+<p>This dataset, most importantly, contains valid states and postcodes listed under relevant ABNs, provided the ABN holder has submitted this information.</p>
+<p>For the structure of the extract itself, it is distributed as a collection of XML files, following this structure:
+<img src="./abn-extract-structure.png" alt="ABN Extract Structure"></p>
+<p>This looks&hellip; like a lot, but as you can quickly tell, we are interested in the bottom row. The indenting of the names of these attributes is intentional. If you have ever worked with an HTML web page (you can see one for yourself by right-clicking and inspecting this web page ;) ), XML data is structured similarly.</p>
+<p>The indents in this case represent which attributes are nested in other ones (i.e. ABN is found by first getting ABR, then going to ABN so, ABR -&gt; ABN).</p>
+<p>So, in order to get to the postcode, this is the path that we do so: ABR -&gt; BusinessAddress -&gt; Postcode.</p>
+<p>Now, we know what we want, let&rsquo;s get to the code!</p>
+<h2 id="the-code-wow-that-was-quicker-than-expected">The Code&hellip; Wow! That was quicker than expected!</h2>
+<p>The code here, similarly to the ASGS GeoNames code, is actually also relatively simple.</p>
+<p>Part of the code involves getting the 2021-22 Corporate Tax Transparency Report and creating a list of ABNs to search on.</p>
+<p>For this post, I&rsquo;ll focus on the postcode searching code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>abn_info_dict <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;abn_abr&#39;</span>: [],
+</span></span><span style="display:flex;"><span>                 <span style="color:#e6db74">&#39;postcode&#39;</span>: []
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>xml_root <span style="color:#f92672">=</span> ET<span style="color:#f92672">.</span>parse(<span style="color:#e6db74">&#39;20241016_Public01.xml&#39;</span>)<span style="color:#f92672">.</span>getroot()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> record <span style="color:#f92672">in</span> xml_root<span style="color:#f92672">.</span>iter(<span style="color:#e6db74">&#39;ABN&#39;</span>):
+</span></span><span style="display:flex;"><span>    abn_info_dict[<span style="color:#e6db74">&#39;abn_abr&#39;</span>]<span style="color:#f92672">.</span>append(record<span style="color:#f92672">.</span>text)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> record <span style="color:#f92672">in</span> xml_root<span style="color:#f92672">.</span>iter(<span style="color:#e6db74">&#39;Postcode&#39;</span>):
+</span></span><span style="display:flex;"><span>    abn_info_dict[<span style="color:#e6db74">&#39;postcode&#39;</span>]<span style="color:#f92672">.</span>append(record<span style="color:#f92672">.</span>text)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>abn_info_df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame<span style="color:#f92672">.</span>from_dict(abn_info_dict)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">del</span> abn_info_dict
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>abn_merge <span style="color:#f92672">=</span> (abn_list_df
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">.</span>merge(abn_info_df, how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;left&#39;</span>, left_on<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;abn_tax&#39;</span>, right_on<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;abn_abr&#39;</span>)
+</span></span><span style="display:flex;"><span>             <span style="color:#f92672">.</span>reset_index(drop<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">del</span> abn_list_df
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>abn_merge_success <span style="color:#f92672">=</span> (abn_merge
+</span></span><span style="display:flex;"><span>                     <span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;not(abn_abr.isna())&#39;</span>)
+</span></span><span style="display:flex;"><span>                     <span style="color:#f92672">.</span>reset_index(drop<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>                    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>abn_merge_unsuccessful <span style="color:#f92672">=</span> (abn_merge
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;abn_abr.isna()&#39;</span>)
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">.</span>drop(columns<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;abn_abr&#39;</span>, <span style="color:#e6db74">&#39;postcode&#39;</span>])
+</span></span><span style="display:flex;"><span>                          <span style="color:#f92672">.</span>reset_index(drop<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>                         )
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">del</span> abn_merge
+</span></span></code></pre></div><p>We start with the first XML file from the ABN Bulk extract (named <code>..._Public01.xml</code>).</p>
+<p>A dictionary is contructed based on the information we can find by addressing the relevant attributes in the file to get ABNs and their linked main business address postcodes.</p>
+<p>Once we have this dictionary, we convert it to a Pandas DataFrame and attempt to merge it with the list of ABNs from the Corporate Tax Transparency Report.</p>
+<p>If matches are found, that is a successful find! Where matches are unsuccessful, we create a separate DataFrame for them and loop through the remaining XML files in the bulk extract, as seen below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> xml <span style="color:#f92672">in</span> glob<span style="color:#f92672">.</span>glob(<span style="color:#e6db74">&#39;*.xml&#39;</span>):
+</span></span><span style="display:flex;"><span>    abn_info_dict <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;abn_abr&#39;</span>: [],
+</span></span><span style="display:flex;"><span>                     <span style="color:#e6db74">&#39;postcode&#39;</span>: []
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    xml_root <span style="color:#f92672">=</span> ET<span style="color:#f92672">.</span>parse(xml)<span style="color:#f92672">.</span>getroot()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> record <span style="color:#f92672">in</span> xml_root<span style="color:#f92672">.</span>iter(<span style="color:#e6db74">&#39;ABN&#39;</span>):
+</span></span><span style="display:flex;"><span>        abn_info_dict[<span style="color:#e6db74">&#39;abn_abr&#39;</span>]<span style="color:#f92672">.</span>append(record<span style="color:#f92672">.</span>text)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> record <span style="color:#f92672">in</span> xml_root<span style="color:#f92672">.</span>iter(<span style="color:#e6db74">&#39;Postcode&#39;</span>):
+</span></span><span style="display:flex;"><span>        abn_info_dict[<span style="color:#e6db74">&#39;postcode&#39;</span>]<span style="color:#f92672">.</span>append(record<span style="color:#f92672">.</span>text)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    abn_info_df <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame<span style="color:#f92672">.</span>from_dict(abn_info_dict)
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">del</span> abn_info_dict  
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    abn_merge <span style="color:#f92672">=</span> (abn_merge_unsuccessful
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">.</span>merge(abn_info_df, how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;left&#39;</span>, left_on<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;abn_tax&#39;</span>, right_on<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;abn_abr&#39;</span>)
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">.</span>reset_index(drop<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    abn_merge_success <span style="color:#f92672">=</span> (pd<span style="color:#f92672">.</span>concat([abn_merge_success, abn_merge<span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;not(abn_abr.isna())&#39;</span>)])
+</span></span><span style="display:flex;"><span>                         <span style="color:#f92672">.</span>reset_index(drop<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>                        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> abn_merge<span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;abn_abr.isna()&#39;</span>)<span style="color:#f92672">.</span>shape[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    abn_merge_unsuccessful <span style="color:#f92672">=</span> (abn_merge
+</span></span><span style="display:flex;"><span>                              <span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;abn_abr.isna()&#39;</span>)
+</span></span><span style="display:flex;"><span>                              <span style="color:#f92672">.</span>drop(columns<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;abn_abr&#39;</span>, <span style="color:#e6db74">&#39;postcode&#39;</span>])
+</span></span><span style="display:flex;"><span>                              <span style="color:#f92672">.</span>reset_index(drop<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>                             )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">del</span> abn_merge
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">del</span> abn_merge
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>abn_found_postcodes <span style="color:#f92672">=</span> (abn_merge_success
+</span></span><span style="display:flex;"><span>                       [[<span style="color:#e6db74">&#39;abn_tax&#39;</span>, <span style="color:#e6db74">&#39;postcode&#39;</span>]]
+</span></span><span style="display:flex;"><span>                       <span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;not(postcode.isna())&#39;</span>)
+</span></span><span style="display:flex;"><span>                       <span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;abn_tax&#39;</span>: <span style="color:#e6db74">&#39;abn&#39;</span>})
+</span></span><span style="display:flex;"><span>                      )
+</span></span></code></pre></div><p>Once all the relevant XML files have been checked and all possible ABNs&rsquo; postcodes have been found, we filter the list down to only successful matches with valid postcodes, here&rsquo;s a sample:
+<img src="./abn-postcodes.png" alt="ABN Postcodes"></p>
+<p>The found postcodes are then merged back to the original Corporate Tax Transparency Data, for use in&hellip; what will be detailed in the next and final post: geospatial mapping!
+<img src="./abn-postcode-remerge.png" alt="ABN Postcode Remerge"></p>
+<h2 id="concluding-remarks">Concluding Remarks</h2>
+<p>Thank you once again for sticking through this post! If you want to see more of this code, you can find it <a href="https://github.com/hbbymth42/abn_postcode_extractor" target="_blank">here</a>
+!.</p>
+<p>I hope that you&rsquo;ll join me for the next post as this will be where this project will start to get really interesting!</p>
+<p>&ndash;HobbyMath42</p>
+
+  
+  <div>
+    <div>For further reading, see relevant Projects below:</div>
+    <ul>
+        <li><a href="/projects/corporate-tax-transparency-analysis/">Corporate Tax Transparency Analysis</a></li>
+    </ul>
+  </div>
+
+
+  </main>
+  <footer>
+    <ul class="social-links">
+    <a href="https://github.com/hbbymth42" target="_blank" class="link-btn"><li>Github</li></a>
+</ul>
+<p>Copyright 2024. All rights reserved.</p>
+
+  </footer>
+</body>
+</html>
