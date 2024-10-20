@@ -6,8 +6,15 @@
     <description>Recent content in Posts on Hobbymath42&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en-US</language>
-    <lastBuildDate>Fri, 18 Oct 2024 18:52:29 +1100</lastBuildDate>
+    <lastBuildDate>Sun, 20 Oct 2024 12:12:10 +1100</lastBuildDate>
     <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Geospatial Corporate Tax Transparency Analysis (Corporate Tax Transparency Analysis - Part 3)</title>
+      <link>http://localhost:1313/posts/geospatial-corporate-tax-transparency-analysis-corporate-tax-transparency-analysis-part-3/</link>
+      <pubDate>Sun, 20 Oct 2024 12:12:10 +1100</pubDate>
+      <guid>http://localhost:1313/posts/geospatial-corporate-tax-transparency-analysis-corporate-tax-transparency-analysis-part-3/</guid>
+      <description>&lt;p&gt;&lt;em&gt;This is the final part of a three-part series. You can find the previous part &lt;a href=&#34;https://hbbymth42.github.io/posts/abn-postcode-extractor-corporate-tax-transparency-analysis-part-2/&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;&#xA;. :)&lt;/em&gt;&lt;/p&gt;&#xA;&lt;p&gt;Alright, we&amp;rsquo;re finally at the finish line! Thanks again for sticking through up to this point. This project has taken a couple of twists and turns up to now but we are now finally getting to the final analysis!&lt;/p&gt;&#xA;&lt;p&gt;The analysis itself, on the surface and like other parts of this project, appears to be relatively simple. However, as somewhat evidenced by the combination of the previous parts, there was a bit of work to do to get up to this point.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>ABN Postcode Extractor (Corporate Tax Transparency Analysis - Part 2)</title>
       <link>http://localhost:1313/posts/abn-postcode-extractor-corporate-tax-transparency-analysis-part-2/</link>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geospatial Corporate Tax Transparency Analysis (Corporate Tax Transparency Analysis - Part 3) | Hobbymath42&#39;s Blog</title>
+
+    <link rel="stylesheet" href="/css/main.css">
+
+
+      <script src="/js/main.js"></script>
+
+
+</head>
+<body>
+  <header>
+    <h1><a href="http://localhost:1313/">Hobbymath42&#39;s Blog</a></h1>
+
+  <nav>
+    <ul>
+      <a class="link-btn" href="/"><li>Home</li>
+      </a>
+      <a class="link-btn" aria-current="true" class="ancestor" href="/posts/"><li>Posts</li>
+      </a>
+      <a class="link-btn" href="/projects/"><li>Projects</li>
+      </a>
+      <a class="link-btn" href="/about/"><li>About</li>
+      </a>
+    </ul>
+  </nav>
+
+
+  </header>
+  <main>
+    
+  <h1>Geospatial Corporate Tax Transparency Analysis (Corporate Tax Transparency Analysis - Part 3)</h1>
+
+  
+  
+  <strong><time datetime="2024-10-20T12:12:10&#43;11:00">October 20, 2024</time></strong>
+
+  <p><em>This is the final part of a three-part series. You can find the previous part <a href="https://hbbymth42.github.io/posts/abn-postcode-extractor-corporate-tax-transparency-analysis-part-2/" target="_blank">here</a>
+. :)</em></p>
+<p>Alright, we&rsquo;re finally at the finish line! Thanks again for sticking through up to this point. This project has taken a couple of twists and turns up to now but we are now finally getting to the final analysis!</p>
+<p>The analysis itself, on the surface and like other parts of this project, appears to be relatively simple. However, as somewhat evidenced by the combination of the previous parts, there was a bit of work to do to get up to this point.</p>
+<p>Building on from the previous parts, we now have our dataset: The 2021-22 Corporate Tax Transparency Report, with ABN holders that have their main business locations geospatially linked to their postcodes.</p>
+<p>For this final part, we&rsquo;re gonna jump straight into the code!</p>
+<h2 id="the-code-that-was-even-quicker-than-the-previous-part">The Code&hellip; that was even quicker than the previous part!</h2>
+<p>For some slight background on the data, this is what our data looks like at the moment:
+<img src="./transparency-data.png" alt="Transparency Data"></p>
+<p>The most important columns we are going to use are all of them except the name and ABN. For this project, we are going to focus on aggregating the data up to the Local Government Area (LGA) level. Hence, the name of each entity and the ABN of each entity is not relevant for this specific analysis and we will be ignoring these fields for now.</p>
+<p>For the code, we are going to reintroduce GeoPandas to once again work with Geospatial data (for some additional background on GeoPandas, the <a href="https://hbbymth42.github.io/posts/asgs-geonames-pipeline-corporate-tax-transparency-analysis-part-1/" target="_blank">first part of this series</a>
+ provides a good overview of the concepts we will be covering in this part!).</p>
+<p>We require GeoPandas for geospatial coding of relevant information, as well as for another purpose: geospatial joining (which we will get to in due course).</p>
+<p>Remember the Shapefiles we created in the first part for the GeoNames postcodes and the ASGS boundaries? This is where they come into play.</p>
+<p>The Shapefiles contain geometry information which represents the latitude and longitude of relevant postcodes, and the areas (which I will refer to as polygons from now) for the ASGS boundaries. The most important boundary for this project is the LGA boundary!</p>
+<p>To get the Corporate Tax Transparency Report data geospatially coded, we simply perform a join to get the relevant defined latitude and longitude information from GeoNames, as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>transparency_data_postcodes_gdf <span style="color:#f92672">=</span> (geonames_postcodes_gdf
+</span></span><span style="display:flex;"><span>                                   <span style="color:#f92672">.</span>merge(transparency_data_df, how<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;right&#39;</span>, left_on<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;postal_cod&#39;</span>, right_on<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;postcode&#39;</span>)
+</span></span><span style="display:flex;"><span>                                   [[<span style="color:#e6db74">&#39;name&#39;</span>, <span style="color:#e6db74">&#39;abn&#39;</span>, <span style="color:#e6db74">&#39;total_income&#39;</span>, <span style="color:#e6db74">&#39;taxable_income&#39;</span> ,<span style="color:#e6db74">&#39;tax_payable&#39;</span>, <span style="color:#e6db74">&#39;geometry&#39;</span>]]
+</span></span><span style="display:flex;"><span>                                   <span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;not(geometry.isna())&#39;</span>)
+</span></span><span style="display:flex;"><span>                                   <span style="color:#f92672">.</span>drop_duplicates(ignore_index<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>                                   <span style="color:#f92672">.</span>to_crs(<span style="color:#ae81ff">7844</span>)
+</span></span><span style="display:flex;"><span>                                  )
+</span></span></code></pre></div><p>This is a simple use of <code>.merge</code> to perform a right join of the geonames postcodes data to the Corporate Tax Transparency Data, using Postcode as our join key. We also make sure that the coordinate reference system is set to &lsquo;EPSG:7844&rsquo; so that the coordinate reference matches that of the ASGS boundaries. The output of this code looks like this:
+<img src="./geocode-transparency-data.png" alt="Geocoded Transparency Data"></p>
+<p>Notice the geometry column on the far right? This is the most important column for this component of the project.</p>
+<p>Now that we have our data geospatially coded based on postcode, we can now work with this data and aggregate it to the Local Government Area (LGA) level!</p>
+<p>How do we do that? Geospatial joining!</p>
+<p>In GeoPandas, we can perform what is termed as a &lsquo;<a href="https://geopandas.org/en/stable/docs/user_guide/mergingdata.html#spatial-joins" target="_blank">spatial join</a>
+&rsquo;. The spatial joins themselves are performed based on a &lsquo;predicate&rsquo; which is specified. Think of a predicate similar to how you would specify a left join or a right join, but geospatially!</p>
+<p>If we think about this concept from a geospatial lens, points on a map can &rsquo;touch&rsquo; each other, lines on a map can &lsquo;intersect&rsquo; and, as relevant for this project, points can be contained &lsquo;within&rsquo; an area (for more detail on specific predicates available in GeoPandas, see <a href="https://shapely.readthedocs.io/en/latest/manual.html#binary-predicates" target="_blank">this</a>
+ part of the documentation :) ).</p>
+<p>For this project, we will use a &lsquo;within&rsquo; predicate spatial join, and we can write a function to perform this join for us:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">asgs_transparency_merge</span>(transparency_gdf: gpd<span style="color:#f92672">.</span>GeoDataFrame, asgs_name: str, path: pathlib<span style="color:#f92672">.</span>PosixPath):
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    asgs_gdf <span style="color:#f92672">=</span> (gpd<span style="color:#f92672">.</span>read_file(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;zip:///</span><span style="color:#e6db74">{</span>path<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">.</span>to_crs(<span style="color:#ae81ff">7844</span>)
+</span></span><span style="display:flex;"><span>               )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    asgs_gdf[<span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>asgs_name<span style="color:#e6db74">}</span><span style="color:#e6db74">_geometry&#39;</span>] <span style="color:#f92672">=</span> asgs_gdf[<span style="color:#e6db74">&#39;geometry&#39;</span>]
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    initial_merge_gdf <span style="color:#f92672">=</span> (transparency_gdf
+</span></span><span style="display:flex;"><span>                         <span style="color:#f92672">.</span>sjoin(asgs_gdf, how<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;left&#34;</span>, predicate<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;within&#34;</span>)
+</span></span><span style="display:flex;"><span>                        )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    initial_merge_success_gdf <span style="color:#f92672">=</span> (initial_merge_gdf
+</span></span><span style="display:flex;"><span>                                 <span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;not(index_right.isna())&#39;</span>)
+</span></span><span style="display:flex;"><span>                                )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    initial_merge_nearest_gdf <span style="color:#f92672">=</span> (initial_merge_gdf
+</span></span><span style="display:flex;"><span>                                 <span style="color:#f92672">.</span>query(<span style="color:#e6db74">&#39;index_right.isna()&#39;</span>)
+</span></span><span style="display:flex;"><span>                                 [[<span style="color:#e6db74">&#39;name&#39;</span>, <span style="color:#e6db74">&#39;abn&#39;</span>, <span style="color:#e6db74">&#39;total_income&#39;</span>, <span style="color:#e6db74">&#39;taxable_income&#39;</span>, <span style="color:#e6db74">&#39;tax_payable&#39;</span>, <span style="color:#e6db74">&#39;geometry&#39;</span>]]
+</span></span><span style="display:flex;"><span>                                 <span style="color:#f92672">.</span>sjoin_nearest(asgs_gdf, how<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;left&#34;</span>)
+</span></span><span style="display:flex;"><span>                                )
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    merge_gdf <span style="color:#f92672">=</span> (pd<span style="color:#f92672">.</span>concat([initial_merge_success_gdf, initial_merge_nearest_gdf])
+</span></span><span style="display:flex;"><span>                 [[<span style="color:#e6db74">&#39;name&#39;</span>, <span style="color:#e6db74">&#39;abn&#39;</span>, <span style="color:#e6db74">&#39;total_income&#39;</span>, <span style="color:#e6db74">&#39;taxable_income&#39;</span>, <span style="color:#e6db74">&#39;tax_payable&#39;</span>, asgs_gdf<span style="color:#f92672">.</span>columns[<span style="color:#ae81ff">1</span>], asgs_gdf<span style="color:#f92672">.</span>columns[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]]]
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">.</span>rename(columns<span style="color:#f92672">=</span>{asgs_gdf<span style="color:#f92672">.</span>columns[<span style="color:#ae81ff">1</span>]: <span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>asgs_name<span style="color:#e6db74">}</span><span style="color:#e6db74">_name&#39;</span>, <span style="color:#e6db74">f</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">{</span>asgs_name<span style="color:#e6db74">}</span><span style="color:#e6db74">_geometry&#39;</span>: <span style="color:#e6db74">&#39;geometry&#39;</span>})
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">.</span>drop_duplicates(ignore_index<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>                )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> merge_gdf
+</span></span></code></pre></div><p>This function allows us to specify an ASGS Shapefile we would like to spatial join (<code>.sjoin()</code>) to our Corporate Tax Transparency Data&hellip; However, with the given predicate we have chosen, there can be some data which does not get merged with a simple <code>.sjoin</code>.</p>
+<p>Utilising a &lsquo;within&rsquo; predicate means that <strong>only</strong> points within an area will be merged, but if a point is on the perimeter of a boundary or multiple boundaries, the spatial join will not be successful.</p>
+<p>We remediate this by utilising <code>.sjoin_nearest()</code>. This spatial join will merge the specific point to the nearest area/s. Since postcode latitudes and longitudes can be on the perimeter of multple LGA boundaries, this means that a postcode can be allocated to multiple LGAs. Hence, we have more complete data at the expense of storing more/duplicate data.</p>
+<p>For this project, we can make this trade-off.</p>
+<p>Specifying the LGA Shapefile as the area we want to spatial join on gives us the following:
+<img src="./asgs-lga-merge.png" alt="ASGS LGA Merge"></p>
+<p>Alright, all that&rsquo;s left to do now is aggregate the relevant metrics (total income, total taxable income and total tax payable), and produce some maps!</p>
+<p>I&rsquo;ll provide one example of the aggregation as well as the mapping, as the code for mapping each metric I want to look at is effectively the same. Let&rsquo;s go with mapping total income by LGA!</p>
+<p>First, aggregation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>transparency_lga_total_income_gdf <span style="color:#f92672">=</span> (transparency_lga_gdf
+</span></span><span style="display:flex;"><span>                                     [[<span style="color:#e6db74">&#39;lga_name&#39;</span>, <span style="color:#e6db74">&#39;geometry&#39;</span>, <span style="color:#e6db74">&#39;total_income&#39;</span>]]
+</span></span><span style="display:flex;"><span>                                     <span style="color:#f92672">.</span>dissolve(by<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;lga_name&#39;</span>, aggfunc<span style="color:#f92672">=</span>{<span style="color:#e6db74">&#39;total_income&#39;</span>: <span style="color:#e6db74">&#39;sum&#39;</span>})
+</span></span><span style="display:flex;"><span>                                     <span style="color:#f92672">.</span>assign(total_income_bill<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> x:x[<span style="color:#e6db74">&#39;total_income&#39;</span>] <span style="color:#f92672">/</span> <span style="color:#ae81ff">1000000000</span>)
+</span></span><span style="display:flex;"><span>                                     <span style="color:#f92672">.</span>reset_index()
+</span></span><span style="display:flex;"><span>                                     [[<span style="color:#e6db74">&#39;lga_name&#39;</span>, <span style="color:#e6db74">&#39;geometry&#39;</span>, <span style="color:#e6db74">&#39;total_income_bill&#39;</span>]]
+</span></span><span style="display:flex;"><span>                                    )
+</span></span></code></pre></div><p>The aggregation performed here is a simple summation of total income for each ABN holder by relevant LGA. The significant figure of the total income summation is then changed to AUD$ billions. This is done to make the scale of the map more readable :).</p>
+<p>To make the map, we can use a Python library called <a href="https://python-visualization.github.io/folium/latest/" target="_blank">Folium</a>
+, which is a library based on the Leaflet.js library to produce interactive geospatial maps.</p>
+<p>This is done like so:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>lga_map <span style="color:#f92672">=</span> folium<span style="color:#f92672">.</span>Map(location<span style="color:#f92672">=</span>(<span style="color:#f92672">-</span><span style="color:#ae81ff">25</span>, <span style="color:#ae81ff">135</span>), zoom_start<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>lga_name <span style="color:#f92672">=</span> folium<span style="color:#f92672">.</span>features<span style="color:#f92672">.</span>GeoJson(
+</span></span><span style="display:flex;"><span>    transparency_lga_total_income_gdf,
+</span></span><span style="display:flex;"><span>    control<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>,
+</span></span><span style="display:flex;"><span>    style_function<span style="color:#f92672">=</span><span style="color:#66d9ef">lambda</span> x: {<span style="color:#e6db74">&#39;fillColor&#39;</span>: <span style="color:#e6db74">&#39;#ffffff&#39;</span>, 
+</span></span><span style="display:flex;"><span>                            <span style="color:#e6db74">&#39;color&#39;</span>:<span style="color:#e6db74">&#39;#000000&#39;</span>, 
+</span></span><span style="display:flex;"><span>                            <span style="color:#e6db74">&#39;fillOpacity&#39;</span>: <span style="color:#ae81ff">0.1</span>, 
+</span></span><span style="display:flex;"><span>                            <span style="color:#e6db74">&#39;weight&#39;</span>: <span style="color:#ae81ff">0.1</span>},
+</span></span><span style="display:flex;"><span>    tooltip<span style="color:#f92672">=</span>folium<span style="color:#f92672">.</span>features<span style="color:#f92672">.</span>GeoJsonTooltip(
+</span></span><span style="display:flex;"><span>        fields<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;lga_name&#39;</span>, <span style="color:#e6db74">&#39;total_income_bill&#39;</span>],
+</span></span><span style="display:flex;"><span>        aliases<span style="color:#f92672">=</span>[<span style="color:#e6db74">&#39;LGA Name: &#39;</span>, <span style="color:#e6db74">&#39;Total Income ($ Billions): &#39;</span>],
+</span></span><span style="display:flex;"><span>        style<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            background-color: white;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            color: #333333;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            font-family: arial;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            font-size: 12px;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            padding: 10px;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">            &#34;&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>        localize<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>folium<span style="color:#f92672">.</span>Choropleth(
+</span></span><span style="display:flex;"><span>    geo_data<span style="color:#f92672">=</span>transparency_lga_total_income_gdf,
+</span></span><span style="display:flex;"><span>    name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;choropleth&#34;</span>,
+</span></span><span style="display:flex;"><span>    data<span style="color:#f92672">=</span>transparency_lga_total_income_gdf,
+</span></span><span style="display:flex;"><span>    columns<span style="color:#f92672">=</span> [<span style="color:#e6db74">&#34;lga_name&#34;</span>,<span style="color:#e6db74">&#34;total_income_bill&#34;</span>],
+</span></span><span style="display:flex;"><span>    key_on<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;feature.properties.lga_name&#34;</span>,
+</span></span><span style="display:flex;"><span>    fill_color<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;PuBuGn&#34;</span>,
+</span></span><span style="display:flex;"><span>    fill_opacity<span style="color:#f92672">=</span><span style="color:#ae81ff">0.7</span>,
+</span></span><span style="display:flex;"><span>    line_opacity<span style="color:#f92672">=</span><span style="color:#ae81ff">0.1</span>,
+</span></span><span style="display:flex;"><span>    bins<span style="color:#f92672">=</span><span style="color:#ae81ff">6</span>,
+</span></span><span style="display:flex;"><span>    legend_name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Total Income ($ Billions) by LGA, FY2021-22&#34;</span>,
+</span></span><span style="display:flex;"><span>    highlight<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>)<span style="color:#f92672">.</span>add_to(lga_map)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>lga_map<span style="color:#f92672">.</span>add_child(lga_name)
+</span></span><span style="display:flex;"><span>folium<span style="color:#f92672">.</span>LayerControl()<span style="color:#f92672">.</span>add_to(lga_map)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>lga_map<span style="color:#f92672">.</span>save(<span style="color:#e6db74">&#39;total_income_by_lga_2021-22.html&#39;</span>)
+</span></span></code></pre></div><p>The map specifically produced by the above code is a Choropleth Map where the colours of relevant LGA areas are allocated based on the quantity/amount in a specified column (in this case, total income by LGA). The map produced is then saved to a HTML file for later viewing!</p>
+<p>This HTML file looks like this:
+<img src="./total-income-map.png" alt="Total Income by LGA Map"></p>
+<p>This map is able to be interacted with and moved around and, as noted by the scale on the top right, the higher the total income for an LGA is, the more green that area becomes on the map.</p>
+<p>This screenshot unfortunately does not do this map justice so to see this map, I would recommend looking at the <a href="https://github.com/hbbymth42/corporate_tax_transparency_analysis" target="_blank">GitHub repository</a>
+ where the code (and even the other maps) are stored!</p>
+<h2 id="the-actual-conclusion">The Actual Conclusion!</h2>
+<p>And&hellip; that&rsquo;s the end! Thank you so much for sticking with this project this far.</p>
+<p>This one was a bit of a maze to navigate but overall, I found it to be a very interesting case study on what can be done with geospatial data in Python!</p>
+<p>Hopefully you got something out of reading all of these posts and if you want to see more posts/projects, feel free to go to either the Projects or Posts pages via the relevant buttons in the navigation bar!</p>
+<p>To get a more detailed view of the relevant code required for this project, you can find the relevant GitHub repos below:</p>
+<ul>
+<li><a href="https://github.com/hbbymth42/asgs_geonames_pipeline" target="_blank">ASGS Geonames Pipeline</a>
+</li>
+<li><a href="https://github.com/hbbymth42/abn_postcode_extractor" target="_blank">ABN Postcode Extractor</a>
+</li>
+<li><a href="https://github.com/hbbymth42/corporate_tax_transparency_analysis" target="_blank">Geospatial Corporate Tax Transparency Analysis</a>
+</li>
+</ul>
+<p>Happy geospatial travels!</p>
+<p>&ndash; HobbyMath42</p>
+
+  
+  <div>
+    <div>For further reading, see relevant Projects below:</div>
+    <ul>
+        <li><a href="/projects/corporate-tax-transparency-analysis/">Corporate Tax Transparency Analysis</a></li>
+    </ul>
+  </div>
+
+
+  </main>
+  <footer>
+    <ul class="social-links">
+    <a href="https://github.com/hbbymth42" target="_blank" class="link-btn"><li>Github</li></a>
+</ul>
+<p>Copyright 2024. All rights reserved.</p>
+
+  </footer>
+</body>
+</html>

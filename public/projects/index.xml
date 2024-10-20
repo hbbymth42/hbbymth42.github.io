@@ -6,12 +6,12 @@
     <description>Recent content in Projects on Hobbymath42&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>en-US</language>
-    <lastBuildDate>Fri, 18 Oct 2024 18:52:29 +1100</lastBuildDate>
+    <lastBuildDate>Sun, 20 Oct 2024 12:12:10 +1100</lastBuildDate>
     <atom:link href="http://localhost:1313/projects/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Corporate Tax Transparency Analysis</title>
       <link>http://localhost:1313/projects/corporate-tax-transparency-analysis/</link>
-      <pubDate>Fri, 18 Oct 2024 18:52:29 +1100</pubDate>
+      <pubDate>Sun, 20 Oct 2024 12:12:10 +1100</pubDate>
       <guid>http://localhost:1313/projects/corporate-tax-transparency-analysis/</guid>
       <description>&lt;p&gt;An analysis/mapping of ABN-holding corporate tax entities by Local Government Area (LGA), for Australian Financial Year 2021-22. Data sourced from the 2021-22 &lt;a href=&#34;https://data.gov.au/data/dataset/corporate-transparency&#34; target=&#34;_blank&#34;&gt;Corporate Tax Transparency Report&lt;/a&gt;&#xA; published by the Australian Taxation Office (ATO)&lt;/p&gt;&#xA;&lt;p&gt;Metrics measured include:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;Total Income Earned&lt;/li&gt;&#xA;&lt;li&gt;Total Taxable Income&lt;/li&gt;&#xA;&lt;li&gt;Total Tax Paid&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Code for the specific analysis/mapping can be found &lt;a href=&#34;https://github.com/hbbymth42/corporate_tax_transparency_analysis&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;&#xA;!&lt;/p&gt;</description>
     </item>
